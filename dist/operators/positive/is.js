@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = require("../../util");
+import { recursiveMatch } from '../../util.js';
 const op = {
     arity: 'binary',
     description: `checks that 'a' deep equals 'b'`,
@@ -9,7 +7,7 @@ const op = {
             return undefined;
         const isUndef = expected === 'undefined';
         const expectedJson = isUndef ? undefined : JSON.parse(expected);
-        const errorPath = (0, util_1.recursiveMatch)(actual, expectedJson);
+        const errorPath = recursiveMatch(actual, expectedJson);
         return errorPath === undefined
             ? undefined
             : {
@@ -21,5 +19,5 @@ const op = {
     },
     name: 'is',
 };
-exports.default = op;
+export default op;
 //# sourceMappingURL=is.js.map

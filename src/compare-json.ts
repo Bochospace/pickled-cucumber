@@ -1,6 +1,6 @@
-import DEFAULT_OPS, { opAtSpec } from './operators';
-import { CompareResult, OperatorMap } from './operators/types';
-import { getDeep } from './util';
+import DEFAULT_OPS, { opAtSpec } from './operators/index.js';
+import { CompareResult, OperatorMap } from './operators/types.js';
+import { getDeep } from './util.js';
 
 const atRegExp = new RegExp(`^at (${opAtSpec}) (.*)$`);
 

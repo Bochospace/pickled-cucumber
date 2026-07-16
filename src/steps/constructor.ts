@@ -1,7 +1,7 @@
 import JSON5 from 'json5';
-import BUILT_IN_ALIASES from '../aliases';
-import { Aliases, Context } from '../types';
-import { getDeep } from '../util';
+import BUILT_IN_ALIASES from '../aliases/index.js';
+import { Aliases, Context } from '../types.js';
+import { getDeep } from '../util.js';
 import {
   ParserFn,
   ParserKind,
@@ -9,7 +9,7 @@ import {
   StepFn,
   StepKind,
   StepOptions,
-} from './types';
+} from './types.js';
 
 const PARSER_MAP: Record<ParserKind, ParserFn> = {
   json: JSON5.parse,

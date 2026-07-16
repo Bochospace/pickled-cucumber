@@ -1,6 +1,6 @@
 import * as assert from 'assert';
-import BUILT_INS from './index';
-import { CompareError, OperatorMap } from './types';
+import BUILT_INS from './index.js';
+import { CompareError, OperatorMap } from './types.js';
 
 export default (ops: OperatorMap): string => {
   const all = { ...BUILT_INS, ...ops };

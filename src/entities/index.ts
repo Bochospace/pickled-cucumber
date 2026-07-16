@@ -1,6 +1,6 @@
 import * as assert from 'assert';
-import { SetupFnArgs } from '../types';
-import { EntityMap } from './types';
+import { SetupFnArgs } from '../types.js';
+import { EntityMap } from './types.js';
 
 const setup = (
   entities: EntityMap,

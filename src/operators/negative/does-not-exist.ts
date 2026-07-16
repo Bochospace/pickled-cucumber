@@ -1,4 +1,4 @@
-import { Operator } from '../types';
+import { Operator } from '../types.js';
 
 const op: Operator = {
   arity: 'unary',

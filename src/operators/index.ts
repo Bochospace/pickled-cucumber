@@ -1,17 +1,17 @@
-import opDoesNotContain from './negative/does-not-contain';
-import opDoesNotExist from './negative/does-not-exist';
-import opDoesNotHaveKeys from './negative/does-not-have-keys';
-import opDoesNotMatch from './negative/does-not-match';
-import opIsNot from './negative/is-not';
-import opApproximates from './positive/approximates';
-import opContains from './positive/contains';
-import opExists from './positive/exists';
-import opHasKeys from './positive/has-keys';
-import opIncludes from './positive/includes';
-import opIs from './positive/is';
-import opMatches from './positive/matches';
-import opStartsWith from './positive/starts-with';
-import { OperatorMap } from './types';
+import opDoesNotContain from './negative/does-not-contain.js';
+import opDoesNotExist from './negative/does-not-exist.js';
+import opDoesNotHaveKeys from './negative/does-not-have-keys.js';
+import opDoesNotMatch from './negative/does-not-match.js';
+import opIsNot from './negative/is-not.js';
+import opApproximates from './positive/approximates.js';
+import opContains from './positive/contains.js';
+import opExists from './positive/exists.js';
+import opHasKeys from './positive/has-keys.js';
+import opIncludes from './positive/includes.js';
+import opIs from './positive/is.js';
+import opMatches from './positive/matches.js';
+import opStartsWith from './positive/starts-with.js';
+import { OperatorMap } from './types.js';
 
 const OPERATORS = [
   opContains,

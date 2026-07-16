@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = require("../../util");
+import { getString } from '../../util.js';
 // Operator to check approximate numbers
 // By default the approximation uses +- 0.001 (DEFAULT_ERROR_MARGIN)
 // We use ERROR_EPSILON to give an extra tiny rounding leeway to fix floating
@@ -26,8 +24,7 @@ const op = {
     arity: 'binary',
     description: `checks that the number 'a' approximates number 'b'`,
     exec: (actual, expected) => {
-        var _a;
-        const actualNumber = parseFloat((0, util_1.getString)(actual));
+        const actualNumber = parseFloat(getString(actual));
         if (Number.isNaN(actualNumber))
             return { error: "is not a number and can't approximate", expected };
         // expected :=
@@ -45,7 +42,7 @@ const op = {
             };
         }
         const expectedNumber = parseFloat(match[1]);
-        const expectedErrorMargin = parseFloat((_a = match[2]) !== null && _a !== void 0 ? _a : DEFAULT_ERROR_MARGIN);
+        const expectedErrorMargin = parseFloat(match[2] ?? DEFAULT_ERROR_MARGIN);
         if (Math.abs(expectedNumber - actualNumber) - ERROR_EPSILON >
             expectedErrorMargin) {
             return {
@@ -58,5 +55,5 @@ const op = {
     },
     name: 'approximates',
 };
-exports.default = op;
+export default op;
 //# sourceMappingURL=approximates.js.map

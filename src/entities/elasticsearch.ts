@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
-import { SetupFnArgs } from '../types';
-import { Entity, EntityOptions, IdOrObject } from './types';
-import { getId } from './util';
+import { SetupFnArgs } from '../types.js';
+import { Entity, EntityOptions, IdOrObject } from './types.js';
+import { getId } from './util.js';
 
 interface Doc<T> {
   _id: string;
@@ -44,7 +44,9 @@ const request = async <T>(
     };
   }
 
-  return await res.json();
+  // node-fetch 3 types `json()` as `Promise<unknown>`; the caller specifies the
+  // expected shape via the `T` type parameter.
+  return (await res.json()) as T;
 };
 
 const create = <T, Tid extends keyof T>(

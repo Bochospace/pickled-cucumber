@@ -1,12 +1,10 @@
 import { SummaryFormatter, formatterHelpers } from '@cucumber/cucumber';
-import { IFormatterOptions } from '@cucumber/cucumber/lib/formatter';
-import { ITestCaseAttempt } from '@cucumber/cucumber/lib/formatter/helpers/event_data_collector';
 import * as messages from '@cucumber/messages';
-import { FirstArg } from './progress-and-profile';
+import { FirstArg, FormatterOptions } from './progress-and-profile.js';
 
 // ts-unused-exports:disable-next-line
 export default class GithubFormatter extends SummaryFormatter {
-  constructor(options: IFormatterOptions) {
+  constructor(options: FormatterOptions) {
     super(options);
     options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
       if (testCaseFinished) {
@@ -17,7 +15,7 @@ export default class GithubFormatter extends SummaryFormatter {
   public logTestCaseFinished(
     testCaseFinished: messages.TestStepFinished,
   ): void {
-    const testCaseAttempt: ITestCaseAttempt = this.eventDataCollector.getTestCaseAttempt(
+    const testCaseAttempt = this.eventDataCollector.getTestCaseAttempt(
       testCaseFinished.testCaseStartedId,
     );
 
@@ -49,7 +47,9 @@ export default class GithubFormatter extends SummaryFormatter {
     }
   }
 
-  logIssues(args: FirstArg<SummaryFormatter['logIssues']>): void {
+  logIssues(
+    args: FirstArg<InstanceType<typeof SummaryFormatter>['logIssues']>,
+  ): void {
     if (
       process.env.PICKLED_NO_WARN &&
       args.title &&

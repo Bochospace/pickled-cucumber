@@ -1,4 +1,4 @@
-import { SetupFnArgs } from '../types';
+import { SetupFnArgs } from '../types.js';
 
 const setup = ({ compare, getCtx, Given, setCtx, Then }: SetupFnArgs): void => {
   Given('variable {variable} is', (id, payload) => setCtx(id, payload), {

@@ -1,4 +1,4 @@
-import { Aliases } from '../types';
+import { Aliases } from '../types.js';
 
 const aliases: Aliases = {
   any: /.*/,

@@ -1,4 +1,4 @@
-import { Entity, IdOrObject } from './types';
+import { Entity, IdOrObject } from './types.js';
 
 const generate = <T, Tid extends keyof T>(
   idField: Tid,

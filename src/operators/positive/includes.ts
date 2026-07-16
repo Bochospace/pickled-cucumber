@@ -1,5 +1,5 @@
-import { getDeep, recursiveMatch } from '../../util';
-import { Operator } from '../types';
+import { getDeep, recursiveMatch } from '../../util.js';
+import { Operator } from '../types.js';
 
 interface Offending {
   actual: unknown;

@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const cucumber_1 = require("@cucumber/cucumber");
-const durations_1 = require("../durations");
+import { SummaryFormatter, formatterHelpers, Status } from '@cucumber/cucumber';
+import { scenarioDurationMs } from '../durations.js';
 // ts-unused-exports:disable-next-line
-class ProfileJsonlFormatter extends cucumber_1.SummaryFormatter {
+export default class ProfileJsonlFormatter extends SummaryFormatter {
     constructor(options) {
         super(options);
         options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
@@ -13,23 +11,22 @@ class ProfileJsonlFormatter extends cucumber_1.SummaryFormatter {
         });
     }
     logTestCaseFinished(testCaseFinished) {
-        var _a, _b, _c;
         const testCaseAttempt = this.eventDataCollector.getTestCaseAttempt(testCaseFinished.testCaseStartedId);
         const { gherkinDocument, worstTestStepResult: { status }, willBeRetried, } = testCaseAttempt;
-        const parsed = cucumber_1.formatterHelpers.parseTestCaseAttempt({
+        const parsed = formatterHelpers.parseTestCaseAttempt({
             snippetBuilder: this.snippetBuilder,
             supportCodeLibrary: this.supportCodeLibrary,
             testCaseAttempt,
         });
-        const { uri: filename, line } = (_a = parsed.testCase.sourceLocation) !== null && _a !== void 0 ? _a : {
+        const { uri: filename, line } = parsed.testCase.sourceLocation ?? {
             uri: '<unknown>',
             line: -1,
         };
-        const feature = (_c = (_b = gherkinDocument.feature) === null || _b === void 0 ? void 0 : _b.name) !== null && _c !== void 0 ? _c : '<Empty>';
+        const feature = gherkinDocument.feature?.name ?? '<Empty>';
         const scenario = parsed.testCase.name;
-        const durationMs = (0, durations_1.scenarioDurationMs)(parsed);
+        const durationMs = scenarioDurationMs(parsed);
         this.log(JSON.stringify({
-            status: cucumber_1.Status[status],
+            status: Status[status],
             durationMs,
             filename,
             scenario,
@@ -39,5 +36,4 @@ class ProfileJsonlFormatter extends cucumber_1.SummaryFormatter {
         }));
     }
 }
-exports.default = ProfileJsonlFormatter;
 //# sourceMappingURL=profile-jsonl.js.map

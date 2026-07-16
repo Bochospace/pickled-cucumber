@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapRequest = void 0;
-const mapRequest = async (originalReq, opts = {}) => {
+export const mapRequest = async (originalReq, opts = {}) => {
     const req = originalReq.credentials && opts.applyCredentials
         ? await opts.applyCredentials(originalReq)
         : originalReq;
@@ -18,5 +15,4 @@ const mapRequest = async (originalReq, opts = {}) => {
         path: url,
     };
 };
-exports.mapRequest = mapRequest;
 //# sourceMappingURL=common.js.map

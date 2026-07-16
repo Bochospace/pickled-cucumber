@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const op = {
     arity: 'binary',
     description: `checks that the object 'a' has all the keys in array 'b'`,
@@ -12,5 +10,5 @@ const op = {
     },
     name: 'has keys',
 };
-exports.default = op;
+export default op;
 //# sourceMappingURL=has-keys.js.map

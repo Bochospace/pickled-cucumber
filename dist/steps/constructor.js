@@ -1,16 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const json5_1 = __importDefault(require("json5"));
-const aliases_1 = __importDefault(require("../aliases"));
-const util_1 = require("../util");
+import JSON5 from 'json5';
+import BUILT_IN_ALIASES from '../aliases/index.js';
+import { getDeep } from '../util.js';
 const PARSER_MAP = {
-    json: json5_1.default.parse,
+    json: JSON5.parse,
 };
 const getDeepString = (ctx, path) => {
-    const v = (0, util_1.getDeep)(ctx, path);
+    const v = getDeep(ctx, path);
     return typeof v === 'string' ? v : JSON.stringify(v);
 };
 // For each key `var` in `ctx`, replaces all occurrences of `${var}` in `str`
@@ -60,10 +55,10 @@ const proxyFnFor = (getCtx, fn, argCount, parserFn) => {
 //
 // - setting `opt.parser` will automatically add a payload parser before sending
 //   the payload to your step definition handler; currently 'json' is available
-exports.default = (aliases, getCtx) => (kind, regexpString, fn, opt = {}) => {
+export default (aliases, getCtx) => (kind, regexpString, fn, opt = {}) => {
     // Generate a proxy of fn that calls `expand` on every argument
     const proxyFn = proxyFnFor(getCtx, fn, fn.length, opt.parser ? PARSER_MAP[opt.parser] : undefined);
-    const allAliases = { ...aliases_1.default, ...aliases };
+    const allAliases = { ...BUILT_IN_ALIASES, ...aliases };
     const rawRegExp = resolveRegExp(allAliases, regexpString);
     const suffix = opt.optional && opt.optional !== true ? ` ${opt.optional}` : '';
     const steps = [];

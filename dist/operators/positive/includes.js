@@ -1,12 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = require("../../util");
+import { getDeep, recursiveMatch } from '../../util.js';
 const isObject = (item) => typeof item === 'object' && !Array.isArray(item) && item !== null;
 const recursiveIncludes = (actual, expectedPartial, path) => {
     const expected = isObject(actual) && isObject(expectedPartial)
         ? { ...actual, ...expectedPartial } // make a whole object from a partial
         : expectedPartial; // is a primitive or array
-    return (0, util_1.recursiveMatch)(actual, expected, path, true);
+    return recursiveMatch(actual, expected, path, true);
 };
 const NOT_IN_ARRAY = {};
 const findOffendingItem = (actual, expected) => {
@@ -39,8 +37,8 @@ const op = {
             expected: expectedJson,
             subError: offending.actual !== NOT_IN_ARRAY
                 ? {
-                    actual: (0, util_1.getDeep)(offending.actual, offending.path),
-                    expected: (0, util_1.getDeep)(expectedJson, offending.path),
+                    actual: getDeep(offending.actual, offending.path),
+                    expected: getDeep(expectedJson, offending.path),
                     path: offending.path,
                 }
                 : undefined,
@@ -48,5 +46,5 @@ const op = {
     },
     name: ['include', 'includes'],
 };
-exports.default = op;
+export default op;
 //# sourceMappingURL=includes.js.map

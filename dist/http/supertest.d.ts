@@ -1,4 +1,4 @@
-import { Headers, HttpFn, Options } from './types';
+import { Headers, HttpFn, Options } from './types.js';
 interface SuperTestResponse {
     headers: Headers;
     on: (e: 'data' | 'end', f: (chunk: string) => void) => void;

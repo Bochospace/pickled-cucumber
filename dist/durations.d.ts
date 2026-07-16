@@ -1,4 +1,5 @@
-import { IParsedTestCaseAttempt } from '@cucumber/cucumber/lib/formatter/helpers/test_case_attempt_parser';
+import type { formatterHelpers } from '@cucumber/cucumber';
+type IParsedTestCaseAttempt = ReturnType<typeof formatterHelpers.parseTestCaseAttempt>;
 interface Duration {
     seconds: number;
     nanos: number;

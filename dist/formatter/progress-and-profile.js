@@ -1,14 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const cucumber_1 = require("@cucumber/cucumber");
-const durations_1 = require("../durations");
+import { SummaryFormatter, formatterHelpers, Status } from '@cucumber/cucumber';
+import { humanizeDuration, scenarioDuration } from '../durations.js';
 /**
  * Formatter class
  *
  * Cucumber requires it to be the export default
  */
 // ts-unused-exports:disable-next-line
-class ProgressAndProfileFormatter extends cucumber_1.SummaryFormatter {
+export default class ProgressAndProfileFormatter extends SummaryFormatter {
     constructor(options) {
         super(options);
         options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
@@ -18,10 +16,9 @@ class ProgressAndProfileFormatter extends cucumber_1.SummaryFormatter {
         });
     }
     logTestCaseFinished(testCaseFinished) {
-        var _a;
         const testCaseAttempt = this.eventDataCollector.getTestCaseAttempt(testCaseFinished.testCaseStartedId);
         const { gherkinDocument, pickle, worstTestStepResult: { status }, } = testCaseAttempt;
-        const parsed = cucumber_1.formatterHelpers.parseTestCaseAttempt({
+        const parsed = formatterHelpers.parseTestCaseAttempt({
             snippetBuilder: this.snippetBuilder,
             supportCodeLibrary: this.supportCodeLibrary,
             testCaseAttempt,
@@ -30,14 +27,13 @@ class ProgressAndProfileFormatter extends cucumber_1.SummaryFormatter {
         const coloredStatus = this.formatStatus(status);
         const ruleId = pickle.astNodeIds[0];
         let ruleName = '';
-        (_a = gherkinDocument.feature) === null || _a === void 0 ? void 0 : _a.children.forEach(({ rule }) => {
-            var _a;
-            if ((_a = rule === null || rule === void 0 ? void 0 : rule.children) === null || _a === void 0 ? void 0 : _a.some(({ scenario }) => (scenario === null || scenario === void 0 ? void 0 : scenario.id) === ruleId))
-                ruleName = rule === null || rule === void 0 ? void 0 : rule.name;
+        gherkinDocument.feature?.children.forEach(({ rule }) => {
+            if (rule?.children?.some(({ scenario }) => scenario?.id === ruleId))
+                ruleName = rule?.name;
         });
         const coloredFeature = gherkinDocument.feature &&
             this.formatFeature(gherkinDocument.feature, ruleName);
-        const humaneDuration = (0, durations_1.humanizeDuration)((0, durations_1.scenarioDuration)(parsed));
+        const humaneDuration = humanizeDuration(scenarioDuration(parsed));
         this.log(`[${coloredStatus}] (${humaneDuration}) ${coloredFeature} ${pickle.name} # ${formattedLocation}\n`);
     }
     formatFeature(feature, rule) {
@@ -50,7 +46,7 @@ class ProgressAndProfileFormatter extends cucumber_1.SummaryFormatter {
         return '<Empty>';
     }
     formatStatus(status) {
-        return this.colorFns.forStatus(status)(cucumber_1.Status[status]);
+        return this.colorFns.forStatus(status)(Status[status]);
     }
     formatLocation(sourceLocation) {
         if (!sourceLocation) {
@@ -68,5 +64,4 @@ class ProgressAndProfileFormatter extends cucumber_1.SummaryFormatter {
         return super.logIssues(args);
     }
 }
-exports.default = ProgressAndProfileFormatter;
 //# sourceMappingURL=progress-and-profile.js.map

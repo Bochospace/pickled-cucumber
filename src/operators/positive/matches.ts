@@ -1,5 +1,5 @@
-import { getString, stringToRegexp } from '../../util';
-import { Operator } from '../types';
+import { getString, stringToRegexp } from '../../util.js';
+import { Operator } from '../types.js';
 
 const op: Operator = {
   arity: 'binary',
