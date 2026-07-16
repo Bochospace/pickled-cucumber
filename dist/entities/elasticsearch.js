@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineElasticSteps = void 0;
-const node_fetch_1 = __importDefault(require("node-fetch"));
-const util_1 = require("./util");
+import fetch from 'node-fetch';
+import { getId } from './util.js';
 const request = async (method, path, body) => {
-    const res = await (0, node_fetch_1.default)(path, {
+    const res = await fetch(path, {
         body: body !== undefined ? JSON.stringify(body) : undefined,
         headers: body ? { 'content-type': 'application/json' } : undefined,
         method,
@@ -52,10 +46,10 @@ const create = (indexUri, indexMapping, idProperty, opts = {}) => {
     const searchOne = async (criteria) => (await search(criteria))[0];
     const getSource = (doc) => doc && doc._source;
     const getSources = (docs) => docs.map((doc) => doc._source);
-    const getById = (idOrObject) => searchOne({ query: { term: { _id: `${(0, util_1.getId)(idProperty, idOrObject)}` } } });
+    const getById = (idOrObject) => searchOne({ query: { term: { _id: `${getId(idProperty, idOrObject)}` } } });
     const getRecordUri = (routing, record) => {
         const uri = routing ? `${indexUri}/${routing}` : indexUri;
-        return `${uri}/_doc/${(0, util_1.getId)(idProperty, record)}`;
+        return `${uri}/_doc/${getId(idProperty, record)}`;
     };
     const entity = {
         create: async (attrs) => {
@@ -81,7 +75,7 @@ const create = (indexUri, indexMapping, idProperty, opts = {}) => {
         findBy: async (criteria) => getSource(await searchOne(criteria)),
         findById: async (idOrObject) => getSource(await getById(idOrObject)),
         update: async (idOrObject, attrs) => {
-            const id = (0, util_1.getId)(idProperty, idOrObject);
+            const id = getId(idProperty, idOrObject);
             const record = (await entity.findById(idOrObject)) || {};
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const recordWithAttrs = { ...record, ...attrs };
@@ -95,13 +89,12 @@ const create = (indexUri, indexMapping, idProperty, opts = {}) => {
     };
     return entity;
 };
-exports.default = create;
-const defineElasticSteps = (indexUri, { compare, getCtx, setCtx, Then, When }) => {
+export default create;
+export const defineElasticSteps = (indexUri, { compare, getCtx, setCtx, Then, When }) => {
     When('searching for', async (payload) => {
         await request('POST', `${indexUri}/_refresh`);
         setCtx('$search-results', await request('POST', `${indexUri}/_search`, JSON.parse(payload)));
     }, { inline: true });
     Then('the search results {op}', async (op, payload) => compare(op, getCtx('$search-results'), payload), { inline: true });
 };
-exports.defineElasticSteps = defineElasticSteps;
 //# sourceMappingURL=elasticsearch.js.map

@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const setup = ({ compare, getCtx, Given, setCtx, Then }) => {
     Given('variable {variable} is', (id, payload) => setCtx(id, payload), {
         inline: true,
@@ -13,5 +11,5 @@ const setup = ({ compare, getCtx, Given, setCtx, Then }) => {
         compare(op, getCtx(varName), payload);
     }, { inline: true });
 };
-exports.default = setup;
+export default setup;
 //# sourceMappingURL=index.js.map

@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const generate = (idField, newId) => {
     const entities = [];
     const isObj = (v) => typeof v === 'object' &&
@@ -45,5 +43,5 @@ const generate = (idField, newId) => {
     };
     return entityMethods;
 };
-exports.default = generate;
+export default generate;
 //# sourceMappingURL=memory.js.map

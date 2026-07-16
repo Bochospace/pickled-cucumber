@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const cucumber_1 = require("@cucumber/cucumber");
+import { SummaryFormatter, formatterHelpers } from '@cucumber/cucumber';
 // ts-unused-exports:disable-next-line
-class GithubFormatter extends cucumber_1.SummaryFormatter {
+export default class GithubFormatter extends SummaryFormatter {
     constructor(options) {
         super(options);
         options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
@@ -13,7 +11,7 @@ class GithubFormatter extends cucumber_1.SummaryFormatter {
     }
     logTestCaseFinished(testCaseFinished) {
         const testCaseAttempt = this.eventDataCollector.getTestCaseAttempt(testCaseFinished.testCaseStartedId);
-        const parsed = cucumber_1.formatterHelpers.parseTestCaseAttempt({
+        const parsed = formatterHelpers.parseTestCaseAttempt({
             snippetBuilder: this.snippetBuilder,
             supportCodeLibrary: this.supportCodeLibrary,
             testCaseAttempt,
@@ -40,5 +38,4 @@ class GithubFormatter extends cucumber_1.SummaryFormatter {
         return super.logIssues(args);
     }
 }
-exports.default = GithubFormatter;
 //# sourceMappingURL=github-actions.js.map

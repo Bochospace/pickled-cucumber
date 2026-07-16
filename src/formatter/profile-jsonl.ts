@@ -1,11 +1,11 @@
 import { SummaryFormatter, formatterHelpers, Status } from '@cucumber/cucumber';
-import { IFormatterOptions } from '@cucumber/cucumber/lib/formatter';
 import * as messages from '@cucumber/messages';
-import { scenarioDurationMs } from '../durations';
+import { scenarioDurationMs } from '../durations.js';
+import { FormatterOptions } from './progress-and-profile.js';
 
 // ts-unused-exports:disable-next-line
 export default class ProfileJsonlFormatter extends SummaryFormatter {
-  constructor(options: IFormatterOptions) {
+  constructor(options: FormatterOptions) {
     super(options);
     options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
       if (testCaseFinished) {

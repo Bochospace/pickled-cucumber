@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-import { mapRequest } from './common';
-import { Headers, HttpFn, Options, Response } from './types';
+import { mapRequest } from './common.js';
+import { Headers, HttpFn, Options, Response } from './types.js';
 
 type FetchFn = typeof fetch;
 

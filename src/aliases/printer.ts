@@ -1,5 +1,5 @@
-import { Aliases } from '../types';
-import BUILT_IN from './index';
+import { Aliases } from '../types.js';
+import BUILT_IN from './index.js';
 
 export default (aliases: Aliases): string => {
   const all = { ...BUILT_IN, ...aliases };

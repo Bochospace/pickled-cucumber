@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const kindOrder = {
     Given: 1,
     Then: 3,
@@ -12,7 +10,7 @@ const orderSteps = (a, b) => a.kind === b.kind
     : kindOrder[a.kind] <= kindOrder[b.kind]
         ? -1
         : 1;
-exports.default = (steps) => [...steps]
+export default (steps) => [...steps]
     .sort(orderSteps)
     .map((s) => `${s.kind} ${s.name}\n`)
     .join('');

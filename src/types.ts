@@ -1,8 +1,15 @@
-import { IDefineSupportCodeMethods } from '@cucumber/cucumber/lib/support_code_library_builder/types';
-import { EntityMap } from './entities/types';
-import { HttpFn } from './http/types';
-import { OperatorMap } from './operators/types';
-import { StepFn, StepOptions } from './steps/types';
+import type {
+  After,
+  AfterAll,
+  AfterStep,
+  Before,
+  BeforeAll,
+  BeforeStep,
+} from '@cucumber/cucumber';
+import { EntityMap } from './entities/types.js';
+import { HttpFn } from './http/types.js';
+import { OperatorMap } from './operators/types.js';
+import { StepFn, StepOptions } from './steps/types.js';
 
 export interface Context {
   [key: string]: unknown;
@@ -31,10 +38,14 @@ export type StepDefinitionFn = (
 
 export type TearDownFn = () => Promise<void> | void;
 
-export type SetupFnArgs = Pick<
-  IDefineSupportCodeMethods,
-  'After' | 'AfterStep' | 'AfterAll' | 'Before' | 'BeforeStep' | 'BeforeAll'
-> & {
+export type SetupFnArgs = {
+  After: typeof After;
+  AfterStep: typeof AfterStep;
+  AfterAll: typeof AfterAll;
+  Before: typeof Before;
+  BeforeStep: typeof BeforeStep;
+  BeforeAll: typeof BeforeAll;
+} & {
   compare: (op: string, actual: unknown, expected: string) => void;
   getCtx: <T>(name: string) => T;
   Given: StepDefinitionFn;

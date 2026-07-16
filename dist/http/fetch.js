@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const common_1 = require("./common");
+import { mapRequest } from './common.js';
 const wrap = (fetchFn, opts = {}) => async (originalReq) => {
-    const req = await (0, common_1.mapRequest)(originalReq, opts);
+    const req = await mapRequest(originalReq, opts);
     const fetchRes = await fetchFn(req.path, {
         body: req.body ? JSON.stringify(req.body) : undefined,
         headers: req.headers,
@@ -19,5 +17,5 @@ const wrap = (fetchFn, opts = {}) => async (originalReq) => {
     };
     return res;
 };
-exports.default = wrap;
+export default wrap;
 //# sourceMappingURL=fetch.js.map

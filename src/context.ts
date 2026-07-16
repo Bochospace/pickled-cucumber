@@ -1,5 +1,5 @@
-import { Context } from './types';
-import { getDeep } from './util';
+import { Context } from './types.js';
+import { getDeep } from './util.js';
 
 let ctx: Context = {};
 

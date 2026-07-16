@@ -10,27 +10,33 @@ import {
   Then,
   When,
 } from '@cucumber/cucumber';
-import printAliases from './aliases/printer';
-import compareJson from './compare-json';
-import { getCtx, getCtxItem, pushCtxItem, setCtx, setCtxItem } from './context';
-import setupEntities from './entities';
-import { defineElasticSteps } from './entities/elasticsearch';
-import setupHttp from './http';
-import setupMisc from './misc';
-import { getOpSpec } from './operators';
-import printOperators, { printError } from './operators/printer';
-import stepCtor from './steps/constructor';
-import printSteps from './steps/printer';
-import { Step, StepKind } from './steps/types';
+import printAliases from './aliases/printer.js';
+import compareJson from './compare-json.js';
+import {
+  getCtx,
+  getCtxItem,
+  pushCtxItem,
+  setCtx,
+  setCtxItem,
+} from './context.js';
+import { defineElasticSteps } from './entities/elasticsearch.js';
+import setupEntities from './entities/index.js';
+import setupHttp from './http/index.js';
+import setupMisc from './misc/index.js';
+import { getOpSpec } from './operators/index.js';
+import printOperators, { printError } from './operators/printer.js';
+import stepCtor from './steps/constructor.js';
+import printSteps from './steps/printer.js';
+import { Step, StepKind } from './steps/types.js';
 import {
   Aliases,
   Options as BaseOptions,
   SetupFnArgs,
   StepDefinitionFn,
   TearDownFn,
-} from './types';
+} from './types.js';
 
-export { getVariables } from './aliases';
+export { getVariables } from './aliases/index.js';
 
 export type Options = BaseOptions;
 

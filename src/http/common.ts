@@ -1,4 +1,4 @@
-import { Headers, Options, Request } from './types';
+import { Headers, Options, Request } from './types.js';
 
 export const mapRequest = async (
   originalReq: Request,

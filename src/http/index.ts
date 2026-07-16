@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import { STATUS_CODES } from 'http';
 import { URL } from 'url';
-import { SetupFnArgs } from '../types';
-import { getDeep } from '../util';
-import { Headers, HttpFn, Method, Request, Response } from './types';
+import { SetupFnArgs } from '../types.js';
+import { getDeep } from '../util.js';
+import { Headers, HttpFn, Method, Request, Response } from './types.js';
 
 const setup = (
   httpFn: HttpFn,

@@ -4,16 +4,17 @@ import execa from 'execa';
 import fs from 'fs';
 import nodeFetch from 'node-fetch';
 import path from 'path';
-import compareJson from './compare-json';
-import createElasticEntity from './entities/elasticsearch';
-import createMemoryEntity from './entities/memory';
-import createMongoEntity from './entities/mongodb';
-import { EntityMap } from './entities/types';
-import httpFetch from './http/fetch';
-import httpSupertest from './http/supertest';
-import setup, { getVariables, Options, SetupFn } from './index';
-import { CompareError } from './operators/types';
-const { mkdtemp, rmdir, writeFile } = fs.promises;
+import compareJson from './compare-json.js';
+import createElasticEntity from './entities/elasticsearch.js';
+import createMemoryEntity from './entities/memory.js';
+import createMongoEntity from './entities/mongodb.js';
+import { EntityMap } from './entities/types.js';
+import httpFastifyInject from './http/fastify-inject.js';
+import httpFetch from './http/fetch.js';
+import httpSupertest from './http/supertest.js';
+import setup, { getVariables, Options, SetupFn } from './index.js';
+import { CompareError } from './operators/types.js';
+const { mkdtemp, rm, writeFile } = fs.promises;
 
 let initialTen = 10;
 const ELASTIC_URI = process.env.ELASTIC_URI
@@ -33,15 +34,19 @@ entities['box'] = createMemoryEntity<Box, 'id'>('id', () => (boxId += 1));
 // === Test `entities/mongo` ================================================ //
 if (process.env.MONGO_URI) {
   // eslint-disable-next-line
-  const mongo = require('mongodb');
-  // eslint-disable-next-line
   let client: any;
   let connected = false;
 
   const getDb = async () => {
     if (client) return client.db();
 
-    const conn = new mongo.MongoClient(process.env.MONGO_URI);
+    // `mongodb` is an optional peer dependency installed without `--save`, so
+    // it is referenced through an indirect specifier to keep the compiler from
+    // requiring its types at build time.
+    const mongoPkg = 'mongodb';
+    // eslint-disable-next-line
+    const mongo = await import(mongoPkg);
+    const conn = new mongo.MongoClient(process.env.MONGO_URI as string);
     client = await conn.connect();
 
     connected = true;
@@ -194,7 +199,7 @@ const fn: SetupFn = ({ getCtx, Given, onTearDown, setCtx, Then, When }) => {
 
     // Assume they define fn
     const stepsContent = `
-import setup, { SetupFn } from '../src/index';
+import setup, { SetupFn } from '../src/index.js';
 
 ${getCtx('steps-definition')}
 
@@ -212,25 +217,19 @@ setup(fn, {
 
     await execa(
       './node_modules/.bin/cucumber-js',
-      [
-        '--publish-quiet',
-        '--require-module',
-        'ts-node/register',
-        '-r',
-        stepsFile,
-        featureFile,
-      ],
+      // cucumber-js 13 removed `--publish-quiet`; publishing is opt-in now, so
+      // no banner-suppression flag is needed.
+      ['--import', stepsFile, featureFile],
       {
         env: {
-          TS_NODE_CACHE: 'false',
-          TS_NODE_FILES: 'true',
+          NODE_OPTIONS: '--import tsx',
         },
       },
     );
 
     onTearDown(async () => {
       if (testDir) {
-        await rmdir(testDir, { recursive: true });
+        await rm(testDir, { recursive: true });
       }
     });
   });
@@ -243,6 +242,65 @@ assert.deepEqual(getVariables('A'), ['A']);
 assert.deepEqual(getVariables('A, B'), ['A', 'B']);
 assert.deepEqual(getVariables('A and B'), ['A', 'B']);
 assert.deepEqual(getVariables('A, B and C'), ['A', 'B', 'C']);
+
+// === Test `http/fastify-inject` =========================================== //
+// Exercised against a fake `inject`-able app so the request/response mapping is
+// covered without pulling in `fastify`.
+(async () => {
+  const injected: unknown[] = [];
+  const fakeApp = {
+    inject: async (opts: unknown) => {
+      injected.push(opts);
+      return {
+        headers: {
+          'content-type': 'application/json',
+          'set-cookie': ['a=1', 'b=2'],
+          'x-count': 3,
+        },
+        payload: '{"ok":true}',
+        statusCode: 201,
+      };
+    },
+  };
+
+  const httpFn = httpFastifyInject(() => fakeApp, {
+    applyCredentials: (req) => ({
+      ...req,
+      headers: { ...req.headers, authorization: 'Bearer token' },
+    }),
+    baseUri: 'http://api',
+  });
+
+  const res = await httpFn({
+    body: { name: 'box' },
+    credentials: { id: 1 },
+    method: 'POST',
+    path: '/things',
+  });
+
+  assert.deepEqual(injected, [
+    {
+      headers: {
+        authorization: 'Bearer token',
+        'content-type': 'application/json; charset=utf-8',
+      },
+      method: 'POST',
+      payload: '{"name":"box"}',
+      url: 'http://api/things',
+    },
+  ]);
+  assert.deepEqual(res, {
+    headers: {
+      'content-type': 'application/json',
+      'set-cookie': 'a=1, b=2',
+      'x-count': '3',
+    },
+    status: 201,
+    text: '{"ok":true}',
+  });
+})().catch((err) => {
+  throw err;
+});
 
 // === Pin down untested dependencies ======================================= //
 assert(httpSupertest);

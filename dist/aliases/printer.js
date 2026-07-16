@@ -1,11 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = __importDefault(require("./index"));
-exports.default = (aliases) => {
-    const all = { ...index_1.default, ...aliases };
+import BUILT_IN from './index.js';
+export default (aliases) => {
+    const all = { ...BUILT_IN, ...aliases };
     const items = Object.keys(all)
         .sort()
         .map((k) => ({ expr: all[k].source, key: `{${k}}:` }));

@@ -1,4 +1,4 @@
-import { Context } from './types';
+import { Context } from './types.js';
 export declare const setCtx: (c: Context) => Context;
 export declare const getCtx: () => Context;
 export declare const getCtxItem: <T>(key: string) => T;

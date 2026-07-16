@@ -1,7 +1,7 @@
 import { SummaryFormatter } from '@cucumber/cucumber';
-import { IFormatterOptions } from '@cucumber/cucumber/lib/formatter';
 import * as messages from '@cucumber/messages';
+import { FormatterOptions } from './progress-and-profile.js';
 export default class ProfileJsonlFormatter extends SummaryFormatter {
-    constructor(options: IFormatterOptions);
+    constructor(options: FormatterOptions);
     logTestCaseFinished(testCaseFinished: messages.TestStepFinished): void;
 }

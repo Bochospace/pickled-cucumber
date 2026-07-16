@@ -1,16 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringToRegexp = exports.getDeep = exports.getString = void 0;
-exports.recursiveMatch = recursiveMatch;
-const getString = (actual) => typeof actual === 'string'
+export const getString = (actual) => typeof actual === 'string'
     ? actual
     : actual === undefined || actual === null
         ? JSON.stringify('')
         : JSON.stringify(actual);
-exports.getString = getString;
 // Checks `a` and `b` and returns `undefined` if they match (i.e. they are
 // deep equal) or the path where they differ.
-function recursiveMatch(a, b, path = '', partial = false) {
+export function recursiveMatch(a, b, path = '', partial = false) {
     // 1) Match if both values are identical references of equivalent primitives
     if (a === b)
         return undefined;
@@ -57,16 +52,14 @@ const getProp = (o, prop) => {
     return name ? o[name][Number(index)] : index ? o[Number(index)] : o[prop];
 };
 const getPathSegments = (path) => (path.match(/"[^"]*"|[^.]+/g) || []).map((k) => k.replace(/^"(.*)"$/, '$1'));
-const getDeep = (o, path) => path === undefined
+export const getDeep = (o, path) => path === undefined
     ? undefined
     : getPathSegments(path).reduce((acc, k) => acc === undefined || acc === null ? undefined : getProp(acc, k), o);
-exports.getDeep = getDeep;
-const stringToRegexp = (str) => {
+export const stringToRegexp = (str) => {
     const [flags] = (str.match(/\/([gimuy]+)$/) || []).slice(1);
     const expectedString = str
         .replace(/^\/(.*)\/[gimuy]*$/, '$1')
         .replace(/^"(.*)"$/, '$1');
     return new RegExp(expectedString, flags);
 };
-exports.stringToRegexp = stringToRegexp;
 //# sourceMappingURL=util.js.map

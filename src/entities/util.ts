@@ -1,4 +1,4 @@
-import { IdOrObject } from './types';
+import { IdOrObject } from './types.js';
 
 const isId = <T, Tid extends keyof T>(
   idOrObject: IdOrObject<T, Tid>,

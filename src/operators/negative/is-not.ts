@@ -1,5 +1,5 @@
-import { recursiveMatch } from '../../util';
-import { Operator } from '../types';
+import { recursiveMatch } from '../../util.js';
+import { Operator } from '../types.js';
 
 const op: Operator = {
   arity: 'binary',

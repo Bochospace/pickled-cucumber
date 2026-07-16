@@ -1,5 +1,5 @@
-import { Entity, EntityOptions } from './types';
-import { getId } from './util';
+import { Entity, EntityOptions } from './types.js';
+import { getId } from './util.js';
 
 type Criteria<T, Tid extends keyof T> = { [id: string]: T[Tid] } | Partial<T>;
 

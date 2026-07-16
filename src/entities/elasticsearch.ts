@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
-import { SetupFnArgs } from '../types';
-import { Entity, EntityOptions, IdOrObject } from './types';
-import { getId } from './util';
+import { SetupFnArgs } from '../types.js';
+import { Entity, EntityOptions, IdOrObject } from './types.js';
+import { getId } from './util.js';
 
 interface Doc<T> {
   _id: string;

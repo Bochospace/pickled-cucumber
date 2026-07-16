@@ -1,10 +1,20 @@
 import { SummaryFormatter, formatterHelpers, Status } from '@cucumber/cucumber';
-import { IFormatterOptions } from '@cucumber/cucumber/lib/formatter';
-import { ILineAndUri } from '@cucumber/cucumber/lib/types';
 import * as messages from '@cucumber/messages';
-import { humanizeDuration, scenarioDuration } from '../durations';
+import { humanizeDuration, scenarioDuration } from '../durations.js';
 
 export type FirstArg<T> = T extends (X: infer X) => void ? X : never;
+
+// Derived from the public `SummaryFormatter` constructor instead of reaching
+// into `@cucumber/cucumber/lib/*`, whose `exports` map is CommonJS-only and so
+// is unresolvable under ESM (NodeNext) module resolution.
+export type FormatterOptions = ConstructorParameters<
+  typeof SummaryFormatter
+>[0];
+
+interface ILineAndUri {
+  line: number;
+  uri: string;
+}
 
 /**
  * Formatter class
@@ -13,7 +23,7 @@ export type FirstArg<T> = T extends (X: infer X) => void ? X : never;
  */
 // ts-unused-exports:disable-next-line
 export default class ProgressAndProfileFormatter extends SummaryFormatter {
-  constructor(options: IFormatterOptions) {
+  constructor(options: FormatterOptions) {
     super(options);
     options.eventBroadcaster.on('envelope', ({ testCaseFinished }) => {
       if (testCaseFinished) {
@@ -85,7 +95,9 @@ export default class ProgressAndProfileFormatter extends SummaryFormatter {
     return this.colorFns.location(`${uri}:${line}`);
   }
 
-  logIssues(args: FirstArg<SummaryFormatter['logIssues']>): void {
+  logIssues(
+    args: FirstArg<InstanceType<typeof SummaryFormatter>['logIssues']>,
+  ): void {
     if (
       process.env.PICKLED_NO_WARN &&
       args.title &&

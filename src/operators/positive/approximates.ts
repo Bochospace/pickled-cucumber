@@ -1,5 +1,5 @@
-import { getString } from '../../util';
-import { Operator } from '../types';
+import { getString } from '../../util.js';
+import { Operator } from '../types.js';
 
 // Operator to check approximate numbers
 // By default the approximation uses +- 0.001 (DEFAULT_ERROR_MARGIN)

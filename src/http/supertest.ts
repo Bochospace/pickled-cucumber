@@ -1,6 +1,6 @@
 import { promisify } from 'util';
-import { mapRequest } from './common';
-import { Headers, HttpFn, Options, Response } from './types';
+import { mapRequest } from './common.js';
+import { Headers, HttpFn, Options, Response } from './types.js';
 
 interface SuperTestResponse {
   headers: Headers;

@@ -1,5 +1,5 @@
-import { SetupFnArgs } from '../types';
-import { Entity, EntityOptions } from './types';
+import { SetupFnArgs } from '../types.js';
+import { Entity, EntityOptions } from './types.js';
 interface Options<T, Tid extends keyof T> extends EntityOptions<T, Tid> {
     getRouting?: (record: T) => string | undefined;
     verbose?: true;

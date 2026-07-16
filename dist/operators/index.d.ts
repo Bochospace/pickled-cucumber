@@ -1,4 +1,4 @@
-import { OperatorMap } from './types';
+import { OperatorMap } from './types.js';
 declare const OPERATORS: OperatorMap;
 export default OPERATORS;
 export declare const opAtSpec = "[\\w.\\[\\]\\$\\{\\}/\\\\\"-]+";

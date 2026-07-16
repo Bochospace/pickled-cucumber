@@ -1,4 +1,4 @@
-import { Step } from './types';
+import { Step } from './types.js';
 
 const kindOrder = {
   Given: 1,

@@ -1,9 +1,8 @@
 import { SummaryFormatter } from '@cucumber/cucumber';
-import { IFormatterOptions } from '@cucumber/cucumber/lib/formatter';
 import * as messages from '@cucumber/messages';
-import { FirstArg } from './progress-and-profile';
+import { FirstArg, FormatterOptions } from './progress-and-profile.js';
 export default class GithubFormatter extends SummaryFormatter {
-    constructor(options: IFormatterOptions);
+    constructor(options: FormatterOptions);
     logTestCaseFinished(testCaseFinished: messages.TestStepFinished): void;
-    logIssues(args: FirstArg<SummaryFormatter['logIssues']>): void;
+    logIssues(args: FirstArg<InstanceType<typeof SummaryFormatter>['logIssues']>): void;
 }
