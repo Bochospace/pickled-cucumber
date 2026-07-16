@@ -15,7 +15,9 @@ const request = async (method, path, body) => {
             status: res.status,
         };
     }
-    return await res.json();
+    // node-fetch 3 types `json()` as `Promise<unknown>`; the caller specifies the
+    // expected shape via the `T` type parameter.
+    return (await res.json());
 };
 const create = (indexUri, indexMapping, idProperty, opts = {}) => {
     let indexExists = false;
