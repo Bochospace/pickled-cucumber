@@ -98,6 +98,21 @@ export const getDeep = (o: unknown, path: string): unknown | undefined =>
         o,
       );
 
+// Both key operators must reject the same two shapes before filtering: a key
+// list that is not an array (`.filter` throws on it), and an actual that cannot
+// hold keys. `typeof null === 'object'`, and reading a string or a number as an
+// empty object leaves `does not have keys` finding nothing missing, so it passes
+// whatever the data is.
+export const getKeyListError = (
+  actual: unknown,
+  keys: unknown,
+): string | undefined =>
+  !Array.isArray(keys)
+    ? 'cannot be compared against a non-array key list'
+    : actual === null || typeof actual !== 'object'
+    ? 'is not an object'
+    : undefined;
+
 export const stringToRegexp = (str: string): RegExp => {
   const [flags] = (str.match(/\/([gimuy]+)$/) || []).slice(1);
 
