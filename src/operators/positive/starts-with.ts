@@ -5,7 +5,7 @@ const op: Operator = {
   arity: 'binary',
   description: `checks that the string representation of 'a' starts with 'b'`,
   exec: (actual, expected) => {
-    const expectedString = `${JSON.parse(expected)}`;
+    const expectedString = getString(JSON.parse(expected));
     return getString(actual).indexOf(expectedString) === 0
       ? undefined
       : { error: 'does not start with', expected: expectedString };

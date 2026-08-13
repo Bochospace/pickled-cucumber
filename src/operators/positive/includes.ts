@@ -12,6 +12,7 @@ const isObject = (item: unknown): item is Record<string, unknown> =>
 const recursiveIncludes = (
   actual: unknown,
   expectedPartial: unknown,
+  absentSatisfiesNull: boolean,
   path?: string,
 ) => {
   const expected =
@@ -19,19 +20,26 @@ const recursiveIncludes = (
       ? { ...actual, ...expectedPartial } // make a whole object from a partial
       : expectedPartial; // is a primitive or array
 
-  return recursiveMatch(actual, expected, path, true);
+  return recursiveMatch(actual, expected, path, true, absentSatisfiesNull);
 };
 
 const NOT_IN_ARRAY = {};
 
-const findOffendingItem = (actual: unknown, expected: string): Offending => {
+const findOffendingItem = (
+  actual: unknown,
+  expected: unknown,
+  absentSatisfiesNull: boolean,
+): Offending => {
   if (!Array.isArray(actual)) {
-    return { actual, path: recursiveIncludes(actual, expected) };
+    return {
+      actual,
+      path: recursiveIncludes(actual, expected, absentSatisfiesNull),
+    };
   }
 
   const items = actual.map((a, i) => ({
     actual: a,
-    path: recursiveIncludes(a, expected, `${i}`),
+    path: recursiveIncludes(a, expected, absentSatisfiesNull, `${i}`),
   }));
 
   if (items.some((i) => !i.path)) {
@@ -45,12 +53,28 @@ const findOffendingItem = (actual: unknown, expected: string): Offending => {
   return { actual: NOT_IN_ARRAY, path: items[0].path };
 };
 
-const op: Operator = {
+interface IncludesOptions {
+  // if false, a `null` in the partial requires the key to be present in 'a',
+  // rather than being satisfied by its absence
+  absentSatisfiesNull?: boolean;
+}
+
+// A factory rather than a single operator so a consumer can register `includes`
+// under its own absent-key policy without re-walking the tree itself.
+export const createIncludes = ({
+  absentSatisfiesNull = true,
+}: IncludesOptions = {}): Operator => ({
   arity: 'binary',
-  description: `checks that the array or object 'a' contains the partial 'b'`,
+  description: `checks that the array or object 'a' contains the partial 'b'${
+    absentSatisfiesNull ? '' : `, requiring a null in 'b' to be present in 'a'`
+  }`,
   exec: (actual, expected) => {
     const expectedJson = JSON.parse(expected);
-    const offending = findOffendingItem(actual, expectedJson);
+    const offending = findOffendingItem(
+      actual,
+      expectedJson,
+      absentSatisfiesNull,
+    );
 
     if (offending.path === undefined) return undefined;
 
@@ -69,6 +93,6 @@ const op: Operator = {
     };
   },
   name: ['include', 'includes'],
-};
+});
 
-export default op;
+export default createIncludes();

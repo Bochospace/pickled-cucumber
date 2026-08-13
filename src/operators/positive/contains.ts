@@ -5,7 +5,7 @@ const op: Operator = {
   arity: 'binary',
   description: `checks that the string representation of 'a' contains 'b'`,
   exec: (actual, expected) => {
-    const expectedString = `${JSON.parse(expected)}`;
+    const expectedString = getString(JSON.parse(expected));
     return getString(actual).indexOf(expectedString) !== -1
       ? undefined
       : { error: 'does not contain', expected: expectedString };

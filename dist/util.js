@@ -5,7 +5,8 @@ export const getString = (actual) => typeof actual === 'string'
         : JSON.stringify(actual);
 // Checks `a` and `b` and returns `undefined` if they match (i.e. they are
 // deep equal) or the path where they differ.
-export function recursiveMatch(a, b, path = '', partial = false) {
+export function recursiveMatch(a, b, path = '', partial = false, // if true, allow `a` to have more keys than `b`
+absentSatisfiesNull = true) {
     // 1) Match if both values are identical references of equivalent primitives
     if (a === b)
         return undefined;
@@ -15,8 +16,9 @@ export function recursiveMatch(a, b, path = '', partial = false) {
         if (b === undefined)
             return undefined;
         // JSON cannot model `undefined`, so if `b` constraints to `null`, we accept
-        // `undefined` in `a`
-        if (a === undefined && b === null)
+        // `undefined` in `a`. Callers that assert presence opt out and fall through
+        // to (3), where the differing `typeof` reports the path.
+        if (a === undefined && b === null && absentSatisfiesNull)
             return undefined;
     }
     // 3) Fail if both values have different types
@@ -36,7 +38,7 @@ export function recursiveMatch(a, b, path = '', partial = false) {
             return path;
         // Recurse and return the first element that fails, if any
         return a
-            .map((va, i) => recursiveMatch(va, b[i], path ? `${path}.${i}` : `${i}`, partial))
+            .map((va, i) => recursiveMatch(va, b[i], path ? `${path}.${i}` : `${i}`, partial, absentSatisfiesNull))
             .find((path) => path !== undefined);
     }
     // 5) Fail if the values are not objects because, they are not arrays (2) and
@@ -48,7 +50,7 @@ export function recursiveMatch(a, b, path = '', partial = false) {
     const aObject = a;
     const bObject = b;
     return Object.keys({ ...aObject, ...bObject })
-        .map((k) => recursiveMatch(aObject[k], bObject[k], path ? `${path}.${k}` : k, partial))
+        .map((k) => recursiveMatch(aObject[k], bObject[k], path ? `${path}.${k}` : k, partial, absentSatisfiesNull))
         .find((path) => path !== undefined);
 }
 const IDX_REGEX = /(.*)\[(\d+)\]$/;
@@ -61,6 +63,16 @@ const getPathSegments = (path) => (path.match(/"[^"]*"|[^.]+/g) || []).map((k) =
 export const getDeep = (o, path) => path === undefined
     ? undefined
     : getPathSegments(path).reduce((acc, k) => acc === undefined || acc === null ? undefined : getProp(acc, k), o);
+// Both key operators must reject the same two shapes before filtering: a key
+// list that is not an array (`.filter` throws on it), and an actual that cannot
+// hold keys. `typeof null === 'object'`, and reading a string or a number as an
+// empty object leaves `does not have keys` finding nothing missing, so it passes
+// whatever the data is.
+export const getKeyListError = (actual, keys) => !Array.isArray(keys)
+    ? 'cannot be compared against a non-array key list'
+    : actual === null || typeof actual !== 'object'
+        ? 'is not an object'
+        : undefined;
 export const stringToRegexp = (str) => {
     const [flags] = (str.match(/\/([gimuy]+)$/) || []).slice(1);
     const expectedString = str

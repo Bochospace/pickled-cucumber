@@ -1,12 +1,17 @@
+import { getKeyListError } from '../../util.js';
 import { Operator } from '../types.js';
 
 const op: Operator = {
   arity: 'binary',
   description: `checks that the object 'a' has none of the keys in array 'b'`,
   exec: (actual, notExpected) => {
-    const actualObject =
-      typeof actual === 'object' ? (actual as Record<string, unknown>) : {};
     const notExpectedKeys: string[] = JSON.parse(notExpected);
+    const keyListError = getKeyListError(actual, notExpectedKeys);
+
+    if (keyListError !== undefined)
+      return { error: keyListError, expected: notExpectedKeys };
+
+    const actualObject = actual as Record<string, unknown>;
     const extra = notExpectedKeys.filter((k) =>
       Object.prototype.hasOwnProperty.call(actualObject, k),
     );

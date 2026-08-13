@@ -13,7 +13,8 @@ import httpFastifyInject from './http/fastify-inject.js';
 import httpFetch from './http/fetch.js';
 import httpSupertest from './http/supertest.js';
 import setup, { getVariables, Options, SetupFn } from './index.js';
-import { CompareError } from './operators/types.js';
+import { createIncludes } from './operators/positive/includes.js';
+import { CompareError, OperatorMap } from './operators/types.js';
 const { mkdtemp, rm, writeFile } = fs.promises;
 
 let initialTen = 10;
@@ -79,6 +80,14 @@ if (ELASTIC_URI) {
   });
 }
 
+// === Test custom `operators` ============================================== //
+// Named so no other operator prefixes it: `{op}` compiles to a regexp
+// alternation followed by the payload, so `includes strictly` would match as
+// `includes` with a payload of `strictly …`.
+const OPERATORS: OperatorMap = {
+  'strictly includes': createIncludes({ absentSatisfiesNull: false }),
+};
+
 // ========================================================================== //
 const options: Options = {
   aliases: {
@@ -96,6 +105,7 @@ const options: Options = {
     },
     initialFive: 5,
   }),
+  operators: OPERATORS,
   usage: true,
 };
 
@@ -121,7 +131,7 @@ const fn: SetupFn = ({ getCtx, Given, onTearDown, setCtx, Then, When }) => {
   When(
     'asserting that {word} {op}',
     (varName, op, expected) =>
-      setCtx('$result', compareJson({}, op, getCtx(varName), expected)),
+      setCtx('$result', compareJson(OPERATORS, op, getCtx(varName), expected)),
     { inline: true },
   );
 

@@ -39,6 +39,11 @@ Scenario: {} is not null
   When asserting that A isn't null
   Then the assertion passes
 
+Scenario: null is not null
+  Given A is null
+  When asserting that A isn't null
+  Then the assertion fails with null is null
+
 Scenario: a Date nested in null is not null
   Given A holds under x the date 2026-01-01T00:00:00Z
   When asserting that A isn't { "x": null }
