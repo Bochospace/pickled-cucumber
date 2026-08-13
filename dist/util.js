@@ -22,6 +22,12 @@ export function recursiveMatch(a, b, path = '', partial = false) {
     // 3) Fail if both values have different types
     if (typeof a !== typeof b)
         return path;
+    // 3.5) Fail if exactly one side is `null`: `typeof null` is `'object'`, so a
+    // `null` would otherwise reach the object branch and be compared as
+    // `Object.keys({ ...a, ...b })` — empty for a `null`, a `Date` or a `{}`, so
+    // the match succeeds vacuously; against a populated object it throws.
+    if (a === null || b === null)
+        return path;
     // 4) Handle arrays
     if (Array.isArray(a) || Array.isArray(b)) {
         // Fail if one is an array and the other is not, or when the arrays have
