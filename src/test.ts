@@ -107,6 +107,17 @@ const fn: SetupFn = ({ getCtx, Given, onTearDown, setCtx, Then, When }) => {
     inline: true,
   });
 
+  // `Given {word} is` parses JSON, which cannot model a `Date` — the shape that
+  // matters most for an expected `null`, since spreading a `Date` yields `{}`
+  // just like spreading `null` does. Worded away from `{word} is …` because its
+  // `inline` variant registers `^(\S+) is (.+)$` and would match ambiguously.
+  Given('{word} holds the date {any}', (name, iso) =>
+    setCtx(name, new Date(iso)),
+  );
+  Given('{word} holds under {word} the date {any}', (name, key, iso) =>
+    setCtx(name, { [key]: new Date(iso) }),
+  );
+
   When(
     'asserting that {word} {op}',
     (varName, op, expected) =>

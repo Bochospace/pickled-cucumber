@@ -33,3 +33,13 @@ Scenario: string inside array inside object that fails
   And B is { "arr": ["first"] }
   When asserting that A isn't "${B.arr.0}"
   Then the assertion fails with "first" is "first"
+
+Scenario: {} is not null
+  Given A is {}
+  When asserting that A isn't null
+  Then the assertion passes
+
+Scenario: a Date nested in null is not null
+  Given A holds under x the date 2026-01-01T00:00:00Z
+  When asserting that A isn't { "x": null }
+  Then the assertion passes
