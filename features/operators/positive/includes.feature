@@ -93,3 +93,38 @@ Scenario: [[null]] includes [null]
   Given A is [[null]]
   When asserting that A includes [null]
   Then the assertion passes
+
+Scenario: {} strictly includes { "a": null }
+  Given A is {}
+  When asserting that A strictly includes { "a": null }
+  Then the assertion fails with {} does not include {"a":null}
+
+Scenario: { "a": null } strictly includes { "a": null }
+  Given A is { "a": null }
+  When asserting that A strictly includes { "a": null }
+  Then the assertion passes
+
+Scenario: { "s": "idle" } strictly includes { "p": null }
+  Given A is { "s": "idle" }
+  When asserting that A strictly includes { "p": null }
+  Then the assertion fails with {"s":"idle"} does not include {"p":null}
+
+Scenario: { "a": {} } strictly includes { "a": { "p": null } }
+  Given A is { "a": {} }
+  When asserting that A strictly includes { "a": { "p": null } }
+  Then the assertion fails with {"a":{}} does not include {"a":{"p":null}}
+
+Scenario: some item of an array has the key a strict null requires
+  Given A is [{ "s": "idle" }, { "p": null }]
+  When asserting that A strictly includes { "p": null }
+  Then the assertion passes
+
+Scenario: no item of an array has the key a strict null requires
+  Given A is [{ "s": "idle" }, { "s": "running" }]
+  When asserting that A strictly includes { "p": null }
+  Then the assertion fails with [{"s":"idle"},{"s":"running"}] does not include {"p":null}
+
+Scenario: strictly includes still ignores keys the partial does not mention
+  Given A is { "p": null, "s": "idle" }
+  When asserting that A strictly includes { "p": null }
+  Then the assertion passes

@@ -12,6 +12,7 @@ export function recursiveMatch(
   b: unknown,
   path = '',
   partial = false, // if true, allow `a` to have more keys than `b`
+  absentSatisfiesNull = true, // if false, a `null` in `b` requires the key in `a`
 ): string | undefined {
   // 1) Match if both values are identical references of equivalent primitives
   if (a === b) return undefined;
@@ -21,8 +22,9 @@ export function recursiveMatch(
     // `b` does not constrain `a` (this key is not in `b`, but can be in `a`)
     if (b === undefined) return undefined;
     // JSON cannot model `undefined`, so if `b` constraints to `null`, we accept
-    // `undefined` in `a`
-    if (a === undefined && b === null) return undefined;
+    // `undefined` in `a`. Callers that assert presence opt out and fall through
+    // to (3), where the differing `typeof` reports the path.
+    if (a === undefined && b === null && absentSatisfiesNull) return undefined;
   }
 
   // 3) Fail if both values have different types
@@ -44,7 +46,13 @@ export function recursiveMatch(
     // Recurse and return the first element that fails, if any
     return a
       .map((va, i) =>
-        recursiveMatch(va, b[i], path ? `${path}.${i}` : `${i}`, partial),
+        recursiveMatch(
+          va,
+          b[i],
+          path ? `${path}.${i}` : `${i}`,
+          partial,
+          absentSatisfiesNull,
+        ),
       )
       .find((path) => path !== undefined);
   }
@@ -64,6 +72,7 @@ export function recursiveMatch(
         bObject[k],
         path ? `${path}.${k}` : k,
         partial,
+        absentSatisfiesNull,
       ),
     )
     .find((path) => path !== undefined);
