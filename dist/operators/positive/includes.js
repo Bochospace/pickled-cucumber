@@ -1,19 +1,22 @@
 import { getDeep, recursiveMatch } from '../../util.js';
 const isObject = (item) => typeof item === 'object' && !Array.isArray(item) && item !== null;
-const recursiveIncludes = (actual, expectedPartial, path) => {
+const recursiveIncludes = (actual, expectedPartial, absentSatisfiesNull, path) => {
     const expected = isObject(actual) && isObject(expectedPartial)
         ? { ...actual, ...expectedPartial } // make a whole object from a partial
         : expectedPartial; // is a primitive or array
-    return recursiveMatch(actual, expected, path, true);
+    return recursiveMatch(actual, expected, path, true, absentSatisfiesNull);
 };
 const NOT_IN_ARRAY = {};
-const findOffendingItem = (actual, expected) => {
+const findOffendingItem = (actual, expected, absentSatisfiesNull) => {
     if (!Array.isArray(actual)) {
-        return { actual, path: recursiveIncludes(actual, expected) };
+        return {
+            actual,
+            path: recursiveIncludes(actual, expected, absentSatisfiesNull),
+        };
     }
     const items = actual.map((a, i) => ({
         actual: a,
-        path: recursiveIncludes(a, expected, `${i}`),
+        path: recursiveIncludes(a, expected, absentSatisfiesNull, `${i}`),
     }));
     if (items.some((i) => !i.path)) {
         return { actual, path: undefined };
@@ -23,12 +26,14 @@ const findOffendingItem = (actual, expected) => {
     }
     return { actual: NOT_IN_ARRAY, path: items[0].path };
 };
-const op = {
+// A factory rather than a single operator so a consumer can register `includes`
+// under its own absent-key policy without re-walking the tree itself.
+export const createIncludes = ({ absentSatisfiesNull = true, } = {}) => ({
     arity: 'binary',
-    description: `checks that the array or object 'a' contains the partial 'b'`,
+    description: `checks that the array or object 'a' contains the partial 'b'${absentSatisfiesNull ? '' : `, requiring a null in 'b' to be present in 'a'`}`,
     exec: (actual, expected) => {
         const expectedJson = JSON.parse(expected);
-        const offending = findOffendingItem(actual, expectedJson);
+        const offending = findOffendingItem(actual, expectedJson, absentSatisfiesNull);
         if (offending.path === undefined)
             return undefined;
         return {
@@ -45,6 +50,6 @@ const op = {
         };
     },
     name: ['include', 'includes'],
-};
-export default op;
+});
+export default createIncludes();
 //# sourceMappingURL=includes.js.map
