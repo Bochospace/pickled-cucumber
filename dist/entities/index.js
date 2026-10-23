@@ -33,10 +33,12 @@ const setup = (entities, { compare, getCtx, Given, onTearDown, setCtx, Then }) =
     Then('the {entity} {variable} was deleted', async (entity, varName) => assert.equal(await entities[entity].findById(getCtx(varName)), null));
     Then('store the document for the {entity} with (\\{.*\\}) in {variable}', async (entity, query, varName) => {
         const doc = await entities[entity].findBy(JSON.parse(query));
+        assert.ok(doc, `no ${entity} matches ${query}`);
         setCtx(varName, doc);
     });
     Then('store the document for {entity} {variable} in {variable}', async (entity, varName, targetVar) => {
         const doc = await entities[entity].findById(getCtx(varName));
+        assert.ok(doc, `no ${entity} matches ${varName} (${JSON.stringify(getCtx(varName))})`);
         setCtx(targetVar, doc);
     });
 };

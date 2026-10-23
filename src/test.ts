@@ -6,6 +6,7 @@ import nodeFetch from 'node-fetch';
 import path from 'path';
 import compareJson from './compare-json.js';
 import createElasticEntity from './entities/elasticsearch.js';
+import setupEntities from './entities/index.js';
 import createMemoryEntity from './entities/memory.js';
 import createMongoEntity from './entities/mongodb.js';
 import { EntityMap } from './entities/types.js';
@@ -15,6 +16,8 @@ import httpSupertest from './http/supertest.js';
 import setup, { getVariables, Options, SetupFn } from './index.js';
 import { createIncludes } from './operators/positive/includes.js';
 import { CompareError, OperatorMap } from './operators/types.js';
+import { StepFn } from './steps/types.js';
+import { SetupFnArgs } from './types.js';
 const { mkdtemp, rm, writeFile } = fs.promises;
 
 let initialTen = 10;
@@ -319,6 +322,52 @@ assert.deepEqual(getVariables('A, B and C'), ['A', 'B', 'C']);
     status: 201,
     text: '{"ok":true}',
   });
+})().catch((err) => {
+  throw err;
+});
+
+// === Test `entities` store steps ========================================== //
+// A feature cannot assert that one of its own steps fails, so the store steps
+// run against fake step registrars over a fresh memory entity.
+(async () => {
+  const steps = new Map<string, StepFn>();
+  const ctx = new Map<string, unknown>();
+  const register = (name: string, fn: StepFn) => steps.set(name, fn);
+  const boxes = createMemoryEntity<Box, 'id'>('id', () => 1);
+  // setupEntities reads only getCtx, setCtx, Given and Then.
+  setupEntities({ box: boxes }, ({
+    getCtx: (name: string) => ctx.get(name),
+    Given: register,
+    setCtx: (name: string, value: unknown) => ctx.set(name, value),
+    Then: register,
+  } as unknown) as SetupFnArgs);
+  const storeBy = steps.get(
+    'store the document for the {entity} with (\\{.*\\}) in {variable}',
+  );
+  const storeById = steps.get(
+    'store the document for {entity} {variable} in {variable}',
+  );
+  assert.ok(storeBy, 'store step not registered');
+  assert.ok(storeById, 'store step not registered');
+
+  await assert.rejects(
+    async () => storeBy('box', '{"color":"red"}', 'NONE_BY'),
+    /no box matches \{"color":"red"\}/,
+  );
+  assert.ok(!ctx.has('NONE_BY'));
+  ctx.set('MISSING', 1);
+  await assert.rejects(
+    async () => storeById('box', 'MISSING', 'NONE_BY_ID'),
+    /no box matches MISSING \(1\)/,
+  );
+  assert.ok(!ctx.has('NONE_BY_ID'));
+
+  const box = await boxes.create({ color: 'red' } as Box);
+  ctx.set('B', box);
+  await storeBy('box', '{"color":"red"}', 'BY');
+  assert.equal(ctx.get('BY'), box);
+  await storeById('box', 'B', 'BY_ID');
+  assert.equal(ctx.get('BY_ID'), box);
 })().catch((err) => {
   throw err;
 });
