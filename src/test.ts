@@ -350,13 +350,17 @@ assert.deepEqual(getVariables('A, B and C'), ['A', 'B', 'C']);
   assert.ok(storeBy, 'store step not registered');
   assert.ok(storeById, 'store step not registered');
 
-  await storeBy('box', '{"color":"red"}', 'NONE_BY');
-  assert.ok(ctx.has('NONE_BY'));
-  assert.equal(ctx.get('NONE_BY'), undefined);
+  await assert.rejects(
+    async () => storeBy('box', '{"color":"red"}', 'NONE_BY'),
+    /no box matches \{"color":"red"\}/,
+  );
+  assert.ok(!ctx.has('NONE_BY'));
   ctx.set('MISSING', 1);
-  await storeById('box', 'MISSING', 'NONE_BY_ID');
-  assert.ok(ctx.has('NONE_BY_ID'));
-  assert.equal(ctx.get('NONE_BY_ID'), undefined);
+  await assert.rejects(
+    async () => storeById('box', 'MISSING', 'NONE_BY_ID'),
+    /no box matches MISSING \(1\)/,
+  );
+  assert.ok(!ctx.has('NONE_BY_ID'));
 
   const box = await boxes.create({ color: 'red' } as Box);
   ctx.set('B', box);
